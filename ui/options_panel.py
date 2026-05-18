@@ -34,6 +34,11 @@ class OptionsPanel(QWidget):
 
         self.extract_audio = QCheckBox("Extract audio only")
         self.line_drawing = QCheckBox("Light anonymisation (cartoon line drawing)")
+        self.detailed_line_drawing = QCheckBox("Very light anonymisation (detailed cartoon)")
+        self.line_drawing.setToolTip("Black lines on a white background, tuned to keep body movement and scene structure visible.")
+        self.detailed_line_drawing.setToolTip(
+            "A lighter black-and-white line effect that keeps more fine detail, including facial detail."
+        )
         self.pixelation = QCheckBox("Medium anonymisation (pixelation)")
         self.blur = QCheckBox("Strong anonymisation (blur)")
         self.silhouette = QCheckBox("Extreme anonymisation (silhouette mode)")
@@ -67,6 +72,7 @@ class OptionsPanel(QWidget):
             self.extract_section,
             self.extract_audio,
             self.line_drawing,
+            self.detailed_line_drawing,
             self.pixelation,
             self.blur,
             self.silhouette,
@@ -159,6 +165,7 @@ class OptionsPanel(QWidget):
             end_time=self.end_time.text().strip(),
             extract_audio_only=self.extract_audio.isChecked(),
             line_drawing=self.line_drawing.isChecked(),
+            detailed_line_drawing=self.detailed_line_drawing.isChecked(),
             pixelation=self.pixelation.isChecked(),
             blur=self.blur.isChecked(),
             silhouette=self.silhouette.isChecked(),

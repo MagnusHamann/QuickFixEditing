@@ -21,7 +21,14 @@ def audio_distortion_filter() -> str:
 def line_drawing_filter() -> str:
     # Cartoon-like black ink on white paper. The contrast step improves edge
     # detection, while negate turns FFmpeg's bright-edge output into dark lines.
-    return "format=gray,eq=contrast=1.45:brightness=-0.02,edgedetect=low=0.04:high=0.16,negate,eq=contrast=1.20:brightness=0.03"
+    return "format=gray,eq=contrast=1.35:brightness=-0.01,edgedetect=low=0.025:high=0.11,negate,eq=contrast=1.15:brightness=0.03"
+
+
+def detailed_line_drawing_filter() -> str:
+    # A lighter cartoon treatment for review work where more facial and scene
+    # detail should remain visible. This is less anonymising than the standard
+    # cartoon mode because the lower thresholds preserve finer edges.
+    return "format=gray,eq=contrast=1.20:brightness=0.00,edgedetect=low=0.012:high=0.055,negate,eq=contrast=1.05:brightness=0.04"
 
 
 def pixelation_filter() -> str:

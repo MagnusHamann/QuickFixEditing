@@ -12,6 +12,7 @@ It is designed for non-technical users: drag in videos or folders, tick the oper
 - Extract a section using `mm:ss` or `hh:mm:ss` start/end fields.
 - Extract audio only to MP3.
 - Light anonymisation with a cartoon-style black-on-white line drawing.
+- Very light anonymisation with a more detailed cartoon line drawing for internal review where more facial detail should remain visible.
 - Medium anonymisation with pixelation.
 - Strong anonymisation with blur.
 - Extreme anonymisation with silhouette-style processing.
@@ -56,6 +57,7 @@ When multiple operations are selected, suffixes are combined:
 ```text
 interview_trimmed_blurred.mp4
 interview_trimmed_blurred_muted.mp4
+interview_detailedcartoon.mp4
 interview_audio.mp3
 ```
 
@@ -167,3 +169,4 @@ powershell.exe -ExecutionPolicy Bypass -File .\agent-bootstrap.ps1 -Yes
 - The application does not use Ollama, cloud AI, or remote media APIs.
 - If users place videos in OneDrive, Dropbox, Google Drive, or another synced folder, that sync client may upload files independently of this app.
 - Anonymisation reduces identifiability but is not a formal de-identification guarantee. Review outputs before sharing.
+- The very light detailed cartoon mode intentionally retains more facial detail and is therefore less privacy-protective than the stronger anonymisation modes.

@@ -9,6 +9,7 @@ from pathlib import Path
 from ffmpeg.filters import (
     audio_distortion_filter,
     blur_filter,
+    detailed_line_drawing_filter,
     grayscale_filter,
     line_drawing_filter,
     pixelation_filter,
@@ -26,6 +27,7 @@ class ProcessingOptions:
     end_time: str = ""
     extract_audio_only: bool = False
     line_drawing: bool = False
+    detailed_line_drawing: bool = False
     pixelation: bool = False
     blur: bool = False
     silhouette: bool = False
@@ -46,10 +48,22 @@ class ProcessingOptions:
             raise ValueError("Distort audio cannot be combined with Remove audio.")
         if self.extract_audio_only and self.has_video_operation:
             raise ValueError("Extract audio only can only be combined with Extract section.")
+        if self.line_drawing and self.detailed_line_drawing:
+            raise ValueError("Choose either Light anonymisation or Very light anonymisation, not both.")
 
     @property
     def has_video_operation(self) -> bool:
-        return any((self.line_drawing, self.pixelation, self.blur, self.silhouette, self.black_white, self.resize))
+        return any(
+            (
+                self.line_drawing,
+                self.detailed_line_drawing,
+                self.pixelation,
+                self.blur,
+                self.silhouette,
+                self.black_white,
+                self.resize,
+            )
+        )
 
     @property
     def any_selected(self) -> bool:
@@ -58,6 +72,7 @@ class ProcessingOptions:
                 self.extract_section,
                 self.extract_audio_only,
                 self.line_drawing,
+                self.detailed_line_drawing,
                 self.pixelation,
                 self.blur,
                 self.silhouette,
@@ -81,6 +96,8 @@ def selected_suffixes(options: ProcessingOptions) -> list[str]:
         suffixes.append("audio")
     if options.line_drawing:
         suffixes.append("linedrawing")
+    if options.detailed_line_drawing:
+        suffixes.append("detailedcartoon")
     if options.pixelation:
         suffixes.append("pixelated")
     if options.blur:
@@ -102,6 +119,8 @@ def video_filters(options: ProcessingOptions) -> list[str]:
     filters: list[str] = []
     if options.line_drawing:
         filters.append(line_drawing_filter())
+    if options.detailed_line_drawing:
+        filters.append(detailed_line_drawing_filter())
     if options.pixelation:
         filters.append(pixelation_filter())
     if options.blur:

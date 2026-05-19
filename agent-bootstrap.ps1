@@ -20,8 +20,22 @@ function Confirm-Yes {
     return $answer.Trim().ToLowerInvariant().StartsWith("y")
 }
 
+function Test-PythonExecutable {
+    param([string]$Python)
+    if (-not $Python -or -not (Test-Path -LiteralPath $Python)) {
+        return $false
+    }
+    try {
+        & $Python -c "import sys; raise SystemExit(0 if sys.version_info >= (3, 10) else 1)" *> $null
+        return $LASTEXITCODE -eq 0
+    }
+    catch {
+        return $false
+    }
+}
+
 function Find-Python {
-    if (Test-Path -LiteralPath $venvPython) {
+    if (Test-PythonExecutable -Python $venvPython) {
         return $venvPython
     }
 
@@ -51,14 +65,8 @@ function Find-Python {
     }
 
     foreach ($candidate in ($candidatePaths | Select-Object -Unique)) {
-        try {
-            & $candidate -c "import sys; raise SystemExit(0 if sys.version_info >= (3, 10) else 1)" *> $null
-            if ($LASTEXITCODE -eq 0) {
-                return $candidate
-            }
-        }
-        catch {
-            continue
+        if (Test-PythonExecutable -Python $candidate) {
+            return $candidate
         }
     }
 
@@ -139,7 +147,7 @@ function Invoke-Python {
 }
 
 function Remove-BrokenVenv {
-    if ((Test-Path -LiteralPath $venvRoot) -and -not (Test-Path -LiteralPath $venvPython)) {
+    if ((Test-Path -LiteralPath $venvRoot) -and -not (Test-PythonExecutable -Python $venvPython)) {
         $rootFull = [System.IO.Path]::GetFullPath($root).TrimEnd("\") + "\"
         $venvFull = [System.IO.Path]::GetFullPath($venvRoot)
         if (-not $venvFull.StartsWith($rootFull, [System.StringComparison]::OrdinalIgnoreCase)) {

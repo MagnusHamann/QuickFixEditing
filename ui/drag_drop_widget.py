@@ -11,12 +11,12 @@ class DragDropWidget(QWidget):
 
     paths_dropped = Signal(list)
 
-    def __init__(self) -> None:
+    def __init__(self, label_text: str | None = None) -> None:
         super().__init__()
         self.setAcceptDrops(True)
         self.setObjectName("DropZone")
 
-        self.label = QLabel("Drop video files or folders here\nSupported: MP4, MOV, MKV, AVI")
+        self.label = QLabel(label_text or "Drop video files or folders here\nSupported: MP4, MOV, MKV, AVI")
         self.label.setAlignment(Qt.AlignCenter)
 
         layout = QVBoxLayout(self)

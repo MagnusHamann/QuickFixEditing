@@ -12,7 +12,20 @@ $bootstrap = Join-Path $root "agent-bootstrap.ps1"
 $main = Join-Path $root "main.py"
 $venvPython = Join-Path $root ".venv\Scripts\python.exe"
 
-if ($SetupOnly -or -not (Test-Path -LiteralPath $venvPython)) {
+function Test-LocalPython {
+    if (-not (Test-Path -LiteralPath $venvPython)) {
+        return $false
+    }
+    try {
+        & $venvPython -c "import sys; raise SystemExit(0 if sys.version_info >= (3, 10) else 1)" *> $null
+        return $LASTEXITCODE -eq 0
+    }
+    catch {
+        return $false
+    }
+}
+
+if ($SetupOnly -or -not (Test-LocalPython)) {
     $args = @("-ExecutionPolicy", "Bypass", "-File", $bootstrap)
     if ($Yes) {
         $args += "-Yes"

@@ -27,6 +27,8 @@ Run:
 ./"Run QuickFixEditing Linux.sh"
 ```
 
+On macOS, use `./"Run QuickFixEditing macOS.command"`.
+
 ### Windows
 
 ```powershell

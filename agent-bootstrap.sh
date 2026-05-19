@@ -13,7 +13,7 @@ while [ "$#" -gt 0 ]; do
 Usage: ./agent-bootstrap.sh [--yes]
 
 Installs/checks Python, FFmpeg, creates .venv, and installs Python dependencies
-for the checkbox-based QuickFix Editing workflow.
+for QuickFixEditing.
 HELP
             exit 0
             ;;
@@ -172,4 +172,5 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
 echo "Bootstrap complete."
-echo "Run the workflow with: ./Run QuickFixEditing Linux.sh"
+echo "Run QuickFixEditing with: ./Run QuickFixEditing Linux.sh"
+echo "On macOS, use: ./Run QuickFixEditing macOS.command"

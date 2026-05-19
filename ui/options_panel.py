@@ -34,10 +34,10 @@ class OptionsPanel(QWidget):
 
         self.extract_audio = QCheckBox("Extract audio only")
         self.line_drawing = QCheckBox("Light anonymisation (cartoon line drawing)")
-        self.detailed_line_drawing = QCheckBox("Very light anonymisation (detailed cartoon)")
-        self.line_drawing.setToolTip("Black lines on a white background, tuned to keep body movement and scene structure visible.")
+        self.detailed_line_drawing = QCheckBox("Detailed anonymisation (line-rich cartoon)")
+        self.line_drawing.setToolTip("Line-only black-on-white cartoon effect, tuned to keep body movement and scene structure visible.")
         self.detailed_line_drawing.setToolTip(
-            "A lighter black-and-white line effect that keeps more fine detail, including facial detail."
+            "A more generous line-detection effect that keeps more facial, hand, clothing, and object lines."
         )
         self.pixelation = QCheckBox("Medium anonymisation (pixelation)")
         self.blur = QCheckBox("Strong anonymisation (blur)")

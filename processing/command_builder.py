@@ -49,7 +49,7 @@ class ProcessingOptions:
         if self.extract_audio_only and self.has_video_operation:
             raise ValueError("Extract audio only can only be combined with Extract section.")
         if self.line_drawing and self.detailed_line_drawing:
-            raise ValueError("Choose either Light anonymisation or Very light anonymisation, not both.")
+            raise ValueError("Choose either Cartoon or Detailed cartoon, not both.")
 
     @property
     def has_video_operation(self) -> bool:

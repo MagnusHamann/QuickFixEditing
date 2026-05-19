@@ -19,16 +19,32 @@ def audio_distortion_filter() -> str:
 
 
 def line_drawing_filter() -> str:
-    # Cartoon-like black ink on white paper. The contrast step improves edge
-    # detection, while negate turns FFmpeg's bright-edge output into dark lines.
-    return "format=gray,eq=contrast=1.35:brightness=-0.01,edgedetect=low=0.025:high=0.11,negate,eq=contrast=1.15:brightness=0.03"
+    # Baseline cartoon treatment. One branch keeps grayscale shading while a
+    # second branch extracts fine black edges; multiply blending gives a pencil
+    # cartoon look while still reducing natural video appearance.
+    return (
+        "format=gray,eq=contrast=1.15:brightness=0.03,"
+        "split=2[shade][edge];"
+        "[edge]unsharp=5:5:1.0,edgedetect=low=0.005:high=0.030,negate[ink];"
+        "[shade]eq=contrast=1.75:brightness=-0.08,"
+        "curves=all='0/0 0.34/0.18 0.68/0.74 1/1'[tones];"
+        "[tones][ink]blend=all_mode=multiply:all_opacity=0.80,"
+        "unsharp=3:3:0.7,format=gray"
+    )
 
 
 def detailed_line_drawing_filter() -> str:
-    # A lighter cartoon treatment for review work where more facial and scene
-    # detail should remain visible. This is less anonymising than the standard
-    # cartoon mode because the lower thresholds preserve finer edges.
-    return "format=gray,eq=contrast=1.20:brightness=0.00,edgedetect=low=0.012:high=0.055,negate,eq=contrast=1.05:brightness=0.04"
+    # Very light anonymisation for close review. This intentionally preserves
+    # far more source detail than the cartoon mode: it is closer to sharpened
+    # black-and-white review footage than to line-art anonymisation.
+    return (
+        "format=gray,"
+        "hqdn3d=1.2:1.2:2.5:2.5,"
+        "unsharp=7:7:1.8,"
+        "eq=contrast=1.22:brightness=0.035:saturation=0,"
+        "curves=all='0/0 0.18/0.12 0.50/0.53 0.82/0.88 1/1',"
+        "format=gray"
+    )
 
 
 def pixelation_filter() -> str:

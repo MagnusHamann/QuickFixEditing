@@ -10,7 +10,7 @@ It is designed for non-technical users: drag in videos or folders, tick the oper
 - Batch process `.mp4`, `.mov`, `.mkv`, and `.avi` files.
 - Extract a section using `mm:ss` or `hh:mm:ss` start/end fields.
 - Extract audio only to MP3.
-- Light, detailed, pixelated, blurred, silhouette, black-and-white, and resized outputs.
+- Light cartoon, very light detailed cartoon, pixelated, blurred, silhouette, black-and-white, and resized outputs.
 - Audio removal or TV-style voice anonymisation.
 - Live FFmpeg command log, progress bar, completed count, failed count, and cancel button.
 - Presets for common social-science research workflows.
@@ -83,3 +83,4 @@ utils/
 - The application does not use Ollama, cloud AI, or remote media APIs.
 - If users place videos in OneDrive, Dropbox, Google Drive, or another synced folder, that sync client may upload files independently of this app.
 - Anonymisation reduces identifiability but is not a formal de-identification guarantee. Review outputs before sharing.
+- Very light detailed cartoon intentionally keeps much more facial and scene detail and is much less privacy-protective than stronger anonymisation modes.

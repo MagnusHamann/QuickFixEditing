@@ -10,7 +10,8 @@ The current version does **not** use Ollama. Do not install Ollama for this proj
 - Do not send media to remote APIs.
 - Do not overwrite original files.
 - Keep generated outputs inside `QuickFixEditing files`.
-- Do not commit `.venv/`, `.tools/`, generated media, logs, or caches.
+- Do not commit app-local `.venv/`, `.tools/`, generated media, logs, or caches.
+- Runtime dependencies belong in the sibling `QuickFixAppDependencies/` folder, not inside this app folder.
 
 ## Fresh Setup
 
@@ -54,3 +55,5 @@ Run:
 ## Expected Fresh-Clone Behaviour
 
 After bootstrap, the app should launch with a drag-and-drop GUI. Users can drop files/folders, select checkbox operations, and start batch processing. Outputs must be written to `QuickFixEditing files` next to each input file.
+
+Setup creates `../QuickFixAppDependencies/.venvs/QuickFixEditing` for Python packages and `../QuickFixAppDependencies/.tools/ffmpeg` for local FFmpeg when needed.

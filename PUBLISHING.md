@@ -26,10 +26,13 @@ PUBLISHING.md
 Do not upload:
 
 ```text
-.venv/
-.tools/
+../QuickFixAppDependencies/
+app-local .venv/
+app-local .tools/
 QuickFixEditing files/
 ```
+
+`QuickFixAppDependencies/` is created beside the app folders on first run and should remain a local runtime cache.
 
 ## Fresh Clone Test
 

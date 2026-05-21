@@ -10,7 +10,8 @@ $ErrorActionPreference = "Stop"
 $root = $PSScriptRoot
 $bootstrap = Join-Path $root "agent-bootstrap.ps1"
 $main = Join-Path $root "main.py"
-$venvPython = Join-Path $root ".venv\Scripts\python.exe"
+$dependencyRoot = Join-Path (Split-Path -Parent $root) "QuickFixAppDependencies"
+$venvPython = Join-Path (Join-Path (Join-Path $dependencyRoot ".venvs") (Split-Path -Leaf $root)) "Scripts\python.exe"
 
 function Test-LocalPython {
     if (-not (Test-Path -LiteralPath $venvPython)) {

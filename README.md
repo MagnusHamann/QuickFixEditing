@@ -50,11 +50,28 @@ On macOS, after `chmod +x`, you can also double-click:
 Run QuickFixEditing macOS.command
 ```
 
+## Shared QuickFix Dependencies
+
+Setup creates and reuses one sibling dependency folder next to the app folders:
+
+```text
+QuickFixApps/
+  QuickFixAppDependencies/
+    .tools/
+    .venvs/
+    models/
+  QuickFixEditing/
+  QuickFixTranscription/
+  QuickFixPhonemeAlignment/
+```
+
+QuickFixEditing installs its Python environment into `QuickFixAppDependencies/.venvs/QuickFixEditing` and looks for FFmpeg in `QuickFixAppDependencies/.tools/ffmpeg`. This keeps the app folder source-only and allows the other QuickFix apps to reuse the same downloaded tools.
+
 ## Manual Python Run
 
 ```sh
-python3 -m venv .venv
-. ./.venv/bin/activate
+python3 -m venv ../QuickFixAppDependencies/.venvs/QuickFixEditing
+. ../QuickFixAppDependencies/.venvs/QuickFixEditing/bin/activate
 python -m pip install -r requirements.txt
 python main.py
 ```
@@ -62,9 +79,9 @@ python main.py
 On Windows:
 
 ```powershell
-py -3 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe .\main.py
+py -3 -m venv ..\QuickFixAppDependencies\.venvs\QuickFixEditing
+..\QuickFixAppDependencies\.venvs\QuickFixEditing\Scripts\python.exe -m pip install -r requirements.txt
+..\QuickFixAppDependencies\.venvs\QuickFixEditing\Scripts\python.exe .\main.py
 ```
 
 ## Project Structure

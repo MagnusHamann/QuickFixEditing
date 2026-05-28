@@ -15,16 +15,19 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from processing.command_builder import ProcessingOptions
+from processing.command_builder import DetailedEditSettings, ProcessingOptions
 
 
 class OptionsPanel(QWidget):
     """Collects user-selected FFmpeg operations."""
 
     options_changed = Signal()
+    edit_silence_requested = Signal()
+    detailed_edit_requested = Signal()
 
     def __init__(self) -> None:
         super().__init__()
+        self.detailed_settings = DetailedEditSettings()
 
         self.extract_section = QCheckBox("Extract section")
         self.start_time = QLineEdit()
@@ -33,6 +36,13 @@ class OptionsPanel(QWidget):
         self.end_time.setPlaceholderText("mm:ss or hh:mm:ss")
 
         self.extract_audio = QCheckBox("Extract audio only")
+        self.detailed_edit = QPushButton("Detailed editing")
+        self.silence_section = QCheckBox("Silence section")
+        self.silence_start_time = QLineEdit()
+        self.silence_end_time = QLineEdit()
+        self.silence_start_time.setPlaceholderText("mm:ss or hh:mm:ss")
+        self.silence_end_time.setPlaceholderText("mm:ss or hh:mm:ss")
+        self.edit_silence = QPushButton("Edit selected waveform")
         self.line_drawing = QCheckBox("Light anonymisation (cartoon line drawing)")
         self.detailed_line_drawing = QCheckBox("Detailed anonymisation (line-rich cartoon)")
         self.line_drawing.setToolTip("Line-only black-on-white cartoon effect, tuned to keep body movement and scene structure visible.")
@@ -71,6 +81,7 @@ class OptionsPanel(QWidget):
         for checkbox in (
             self.extract_section,
             self.extract_audio,
+            self.silence_section,
             self.line_drawing,
             self.detailed_line_drawing,
             self.pixelation,
@@ -83,11 +94,20 @@ class OptionsPanel(QWidget):
         ):
             group_layout.addWidget(checkbox)
 
+        group_layout.addWidget(self.detailed_edit)
+
         self.trim_group = QGroupBox("Section times")
         trim_layout = QFormLayout(self.trim_group)
         trim_layout.addRow("Start", self.start_time)
         trim_layout.addRow("End", self.end_time)
         group_layout.addWidget(self.trim_group)
+
+        self.silence_group = QGroupBox("Silence times")
+        silence_layout = QFormLayout(self.silence_group)
+        silence_layout.addRow("Start", self.silence_start_time)
+        silence_layout.addRow("End", self.silence_end_time)
+        silence_layout.addRow(self.edit_silence)
+        group_layout.addWidget(self.silence_group)
 
         resize_row = QFormLayout()
         resize_row.addRow(QLabel("Size"), self.resize_height)
@@ -115,7 +135,11 @@ class OptionsPanel(QWidget):
             checkbox.toggled.connect(self.options_changed)
         self.start_time.textChanged.connect(self.options_changed)
         self.end_time.textChanged.connect(self.options_changed)
+        self.silence_start_time.textChanged.connect(self.options_changed)
+        self.silence_end_time.textChanged.connect(self.options_changed)
         self.resize_height.currentTextChanged.connect(self.options_changed)
+        self.detailed_edit.clicked.connect(self.detailed_edit_requested)
+        self.edit_silence.clicked.connect(self.edit_silence_requested)
 
         self.preset_observation.clicked.connect(self.apply_observation_preset)
         self.preset_interview.clicked.connect(self.apply_interview_preset)
@@ -125,6 +149,7 @@ class OptionsPanel(QWidget):
 
     def _update_visibility(self) -> None:
         self.trim_group.setVisible(self.extract_section.isChecked())
+        self.silence_group.setVisible(self.silence_section.isChecked())
         self.resize_height.setEnabled(self.resize.isChecked())
 
     def clear_all(self) -> None:
@@ -157,6 +182,9 @@ class OptionsPanel(QWidget):
         self.clear_all()
         self.extract_audio.setChecked(True)
 
+    def enable_silence_section(self) -> None:
+        self.silence_section.setChecked(True)
+
     def selected_options(self) -> ProcessingOptions:
         resize_label = self.resize_height.currentText()
         return ProcessingOptions(
@@ -164,6 +192,9 @@ class OptionsPanel(QWidget):
             start_time=self.start_time.text().strip(),
             end_time=self.end_time.text().strip(),
             extract_audio_only=self.extract_audio.isChecked(),
+            silence_section=self.silence_section.isChecked(),
+            silence_start_time=self.silence_start_time.text().strip(),
+            silence_end_time=self.silence_end_time.text().strip(),
             line_drawing=self.line_drawing.isChecked(),
             detailed_line_drawing=self.detailed_line_drawing.isChecked(),
             pixelation=self.pixelation.isChecked(),
@@ -174,4 +205,5 @@ class OptionsPanel(QWidget):
             black_white=self.black_white.isChecked(),
             resize=self.resize.isChecked(),
             resize_height=int(resize_label.replace("p", "")),
+            detailed_settings=self.detailed_settings,
         )

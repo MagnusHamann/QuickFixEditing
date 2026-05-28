@@ -18,6 +18,7 @@ main.py
 processing/
 requirements.txt
 setup-linux-macos.sh
+tests/
 ui/
 utils/
 PUBLISHING.md

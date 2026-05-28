@@ -6,7 +6,9 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-SUPPORTED_EXTENSIONS = {".mp4", ".mov", ".mkv", ".avi"}
+VIDEO_EXTENSIONS = {".mp4", ".mov", ".mkv", ".avi"}
+AUDIO_EXTENSIONS = {".mp3", ".wav", ".m4a", ".flac", ".aac", ".ogg"}
+SUPPORTED_EXTENSIONS = VIDEO_EXTENSIONS | AUDIO_EXTENSIONS
 OUTPUT_FOLDER_NAME = "QuickFixEditing files"
 
 
@@ -18,8 +20,16 @@ class FileRecord:
     size_bytes: int
 
 
-def collect_video_files(paths: list[Path]) -> list[Path]:
-    """Collect supported files from dropped files and first-level folders."""
+def is_audio_file(path: Path) -> bool:
+    return path.suffix.lower() in AUDIO_EXTENSIONS
+
+
+def is_video_file(path: Path) -> bool:
+    return path.suffix.lower() in VIDEO_EXTENSIONS
+
+
+def collect_media_files(paths: list[Path]) -> list[Path]:
+    """Collect supported media files from dropped files and first-level folders."""
     files: list[Path] = []
     for path in paths:
         expanded = path.expanduser()
@@ -35,6 +45,11 @@ def collect_video_files(paths: list[Path]) -> list[Path]:
             continue
         raise ValueError(f"Path not found: {path}")
     return files
+
+
+def collect_video_files(paths: list[Path]) -> list[Path]:
+    """Backward-compatible alias for older call sites."""
+    return collect_media_files(paths)
 
 
 def human_size(size_bytes: int) -> str:
@@ -64,10 +79,15 @@ def probe_file_record(path: Path, runner) -> FileRecord:
         duration = duration_label(info.get("duration"))
         width = info.get("width")
         height = info.get("height")
-        resolution = f"{width}x{height}" if width and height else "Unknown"
+        if width and height:
+            resolution = f"{width}x{height}"
+        elif info.get("has_audio"):
+            resolution = "Audio"
+        else:
+            resolution = "Unknown"
     except Exception:
         duration = "Unknown"
-        resolution = "Unknown"
+        resolution = "Audio" if is_audio_file(path) else "Unknown"
 
     return FileRecord(
         path=path,

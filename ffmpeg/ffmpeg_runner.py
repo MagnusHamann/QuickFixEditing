@@ -91,6 +91,8 @@ class FFmpegRunner:
                 self.terminate()
                 return -1
             clean = line.rstrip()
+            if "deprecated pixel format used" in clean:
+                continue
             if clean:
                 log_callback(clean)
         return_code = self.current_process.wait()

@@ -34,6 +34,7 @@ from ui.detailed_edit_dialog import DetailedEditDialog
 from ui.options_panel import OptionsPanel
 from ui.waveform_editor import WaveformEditorDialog, format_seconds
 from utils.file_utils import FileRecord, collect_media_files, human_size, is_audio_file, is_video_file, probe_file_record
+from utils.validation import parse_time_to_seconds
 
 
 class MainWindow(QMainWindow):
@@ -323,6 +324,8 @@ class MainWindow(QMainWindow):
             return
         if not self._validate_options_for_audio_records(options):
             return
+        if not self._validate_time_ranges_for_records(options):
+            return
 
         records = self.records
         if options.silence_section and not options.has_silence_times and not options.any_selected_excluding_silence:
@@ -414,4 +417,47 @@ class MainWindow(QMainWindow):
         if options.remove_audio:
             QMessageBox.warning(self, "Audio-only files selected", "Remove audio cannot be used on audio-only files.")
             return False
+        return True
+
+    def _validate_time_ranges_for_records(self, options) -> bool:
+        ranges: list[tuple[str, int, int]] = []
+        if options.extract_section:
+            ranges.append(
+                (
+                    "Extract section",
+                    parse_time_to_seconds(options.start_time, "Start time"),
+                    parse_time_to_seconds(options.end_time, "End time"),
+                )
+            )
+        if options.silence_section and options.has_silence_times:
+            ranges.append(
+                (
+                    "Silence section",
+                    parse_time_to_seconds(options.silence_start_time, "Silence start time"),
+                    parse_time_to_seconds(options.silence_end_time, "Silence end time"),
+                )
+            )
+
+        for record in self.records:
+            if record.duration_seconds is None:
+                continue
+            for label, start_seconds, end_seconds in ranges:
+                if start_seconds >= record.duration_seconds:
+                    QMessageBox.warning(
+                        self,
+                        "Time range outside file",
+                        f"{label} starts after the end of {record.path.name}.\n\n"
+                        f"File duration: {record.duration_label}\n"
+                        f"Selected start: {format_seconds(start_seconds)}",
+                    )
+                    return False
+                if end_seconds > record.duration_seconds:
+                    QMessageBox.warning(
+                        self,
+                        "Time range outside file",
+                        f"{label} ends after the end of {record.path.name}.\n\n"
+                        f"File duration: {record.duration_label}\n"
+                        f"Selected end: {format_seconds(end_seconds)}",
+                    )
+                    return False
         return True

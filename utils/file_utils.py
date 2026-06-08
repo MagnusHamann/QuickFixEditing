@@ -16,6 +16,7 @@ OUTPUT_FOLDER_NAME = "QuickFixEditing files"
 class FileRecord:
     path: Path
     duration_label: str
+    duration_seconds: float | None
     resolution_label: str
     size_bytes: int
 
@@ -76,7 +77,8 @@ def duration_label(seconds: float | None) -> str:
 def probe_file_record(path: Path, runner) -> FileRecord:
     try:
         info = runner.probe(path)
-        duration = duration_label(info.get("duration"))
+        duration_seconds = info.get("duration")
+        duration = duration_label(duration_seconds)
         width = info.get("width")
         height = info.get("height")
         if width and height:
@@ -86,12 +88,14 @@ def probe_file_record(path: Path, runner) -> FileRecord:
         else:
             resolution = "Unknown"
     except Exception:
+        duration_seconds = None
         duration = "Unknown"
         resolution = "Audio" if is_audio_file(path) else "Unknown"
 
     return FileRecord(
         path=path,
         duration_label=duration,
+        duration_seconds=duration_seconds,
         resolution_label=resolution,
         size_bytes=path.stat().st_size,
     )
